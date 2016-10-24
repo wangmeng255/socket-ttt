@@ -1,7 +1,6 @@
 "use strict"
 
 var Game = function(socket, players, steps) {
-	var socket = socket;
 	var players = players;
 	var steps = steps;
 	var board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -181,125 +180,122 @@ var Game = function(socket, players, steps) {
 }
 
 var RunTicTacToe = function(socket, user) {
-	this.usersArray = [];
-    this.client = user;
-    this.client.socketId = socket.id;
-    this.game = null;
-    this.socket = socket;
+	var usersArray = [];
+    var client = user;
+    client.socketId = socket.id;
     
-    this.switchInput = $('.switch input');
-    this.switch = $('.switch');
-    this.signUp = $('#sign-up');
-    this.logIn = $('#log-in');
-    this.playersUl = $('#players-ul');
-    this.playersLi;
-    this.players = $('#players');
-    this.gameTitle = $('.game h1');
+    var switchInput = $('.switch input');
+    var switchLogOut = $('.switch');
+    var signUp = $('#sign-up');
+    var logIn = $('#log-in');
+    var playersUl = $('#players-ul');
+    var playersLi;
+    var players = $('#players');
+    var gameTitle = $('.game h1');
     
-    this.switchInput.prop('checked', true);
-    this.switch.css('pointer-events', 'auto');
-    this.signUp.hide();
-    this.logIn.hide();
+    switchInput.prop('checked', true);
+    switchLogOut.css('pointer-events', 'auto');
+    signUp.hide();
+    logIn.hide();
     
-    this.switchInput.click(this.switchInputonClick.bind(this));
-	this.players.on('click', this.playersonClick.bind(this));
+    switchInput.click(switchInputonClick);
+	players.on('click', playersonClick);
 	
-    this.socket.emit('add user', {username: user.username});
-	this.socket.emit('get usersArray');
+    socket.emit('add user', {username: user.username});
+	socket.emit('get usersArray');
 	    
-	this.socket.on('get usersArray', this.getUsersArray.bind(this));
-	this.socket.on('user joined', this.getUsersArray.bind(this));
-	this.socket.on('user left', this.getUsersArray.bind(this));
-	this.socket.on('request to play', this.requestToPlay.bind(this));
-	this.socket.on('response from receiver', this.responseFromReceiver.bind(this));
-};
-
-RunTicTacToe.prototype.getUsersArray = function(data) {
-	var ul = this.playersUl;
-	ul.children().remove('li');
-	this.usersArray = this.showList(ul, data);
-	this.playersLi = $('#players li');
-};
-
-RunTicTacToe.prototype.requestToPlay = function(data) {
-	var accept = confirm(data.sender.username + ' wants to play with you, do you accept?');
-	if (accept === true) {
-		this.socket.emit('response from receiver', {sender: data.sender, receiver: data.receiver, accept: true});
-		for(var i = 0; i < this.usersArray.length; i++) {
-			if(this.usersArray[i].socketId === data.sender.socketId) {
-	        	this.usersArray[i].state = 'busy';
-	        	this.gameTitle.text('playing with ' + data.sender.username);
-	        	$(this.playersLi.get(i)).find('.state').toggleClass('green').addClass('red');
+	socket.on('get usersArray', getUsersArray);
+	socket.on('user joined', getUsersArray);
+	socket.on('user left', getUsersArray);
+	socket.on('request to play', requestToPlay);
+	socket.on('response from receiver', responseFromReceiver);
+	
+	function getUsersArray(data) {
+		var ul = playersUl;
+		ul.children().remove('li');
+		usersArray = showList(ul, data);
+		playersLi = $('#players li');
+	}
+	
+	function requestToPlay(data) {
+		var accept = confirm(data.sender.username + ' wants to play with you, do you accept?');
+		if (accept === true) {
+			socket.emit('response from receiver', {sender: data.sender, receiver: data.receiver, accept: true});
+			for(var i = 0; i < usersArray.length; i++) {
+				if(usersArray[i].socketId === data.sender.socketId) {
+		        	usersArray[i].state = 'busy';
+		        	gameTitle.text('playing with ' + data.sender.username);
+		        	$(playersLi.get(i)).find('.state').toggleClass('green').addClass('red');
+				}
+	        }
+			Game(socket, data, 1);
+		} else {
+			socket.emit('response from receiver', {sender: data.sender, receiver: data.receiver, accept: false});
+		}
+	}
+	
+	function responseFromReceiver(data) {
+		if(data.accept) {
+	        Game(socket, data, 0);
+	        for(var i = 0; i < usersArray.length; i++) {
+	        	if(usersArray[i].socketId === data.receiver.socketId) {
+		        	usersArray[i].state = 'busy';
+		        	gameTitle.text('playing with ' + data.receiver.username);
+		        	$(playersLi.get(i)).find('.state').toggleClass('green').addClass('red');
+				}
+	        }
+	    }
+		else {alert(data.receiver.username + 'is busy!')};
+	}
+	
+	function switchInputonClick(event) {
+		var logOut = event.target;
+		if(!logOut.checked) {
+			socket.emit('log out');
+			logIn.show();
+			switchLogOut.css('pointer-events', 'none');
+			switchInput.off('click', switchInputonClick);
+			players.off('click', playersonClick);
+			socket.off('get usersArray', getUsersArray);
+			socket.off('user joined', getUsersArray);
+			socket.off('user left', getUsersArray);
+			socket.off('request to play', requestToPlay);
+			socket.off('response from receiver', responseFromReceiver);
+		}
+		else switchLogOut.css('pointer-events', 'auto');
+	}
+	
+	function playersonClick(event) {
+		var player = usersArray[playersLi.index($(event.target).closest('li'))];
+		if(player.state === 'available') {
+			socket.emit('send game request', {
+				sender: {username: client.username}, 
+				receiver: {username: player.username, socketId: player.socketId}
+			});
+		}
+		else console.log(player.username + 'is playing');	
+	}
+	
+	function showList(ul, data) {
+		var stateCircle;
+		for(var i = 0; i < data.length; i++) {
+			var user = data[i];
+			if(user.socketId === client.socketId) {
+				data.splice(i, 1); 
+				i--;
+				continue;
 			}
-        }
-		this.game = Game(this.socket, data, 1);
-	} else {
-		this.socket.emit('response from receiver', {sender: data.sender, receiver: data.receiver, accept: false});
-	}
-};
-
-RunTicTacToe.prototype.responseFromReceiver = function(data) {
-	if(data.accept) {
-        this.game = Game(this.socket, data, 0);
-        for(var i = 0; i < this.usersArray.length; i++) {
-        	if(this.usersArray[i].socketId === data.receiver.socketId) {
-	        	this.usersArray[i].state = 'busy';
-	        	this.gameTitle.text('playing with ' + data.receiver.username);
-	        	$(this.playersLi.get(i)).find('.state').toggleClass('green').addClass('red');
+			if(user.state === 'available') {
+			    stateCircle = '<div class="green state"></div>';
 			}
-        }
-    }
-	else {alert(data.receiver.username + 'is busy!')};
-};
-
-RunTicTacToe.prototype.switchInputonClick = function(event) {
-	var logOut = event.target;
-	if(!logOut.checked) {
-		this.socket.emit('log out');
-		this.logIn.show();
-		this.switch.css('pointer-events', 'none');
-		this.switchInput.off('click', this.switchInputonClick);
-		this.players.off('click', this.playersonClick);
-		this.switchInputonClick = null;
-		this.playersonClick = null;
-		this.usersArray = null;
-    	this.client = null;
-    	this.game = null;
-    	this.socket = null;
-	}
-	else this.switch.css('pointer-events', 'auto');
-};
-
-RunTicTacToe.prototype.playersonClick = function(event) {
-	var player = this.usersArray[this.playersLi.index($(event.target).closest('li'))];
-	if(player.state === 'available') {
-		this.socket.emit('send game request', {
-			sender: {username: this.client.username}, 
-			receiver: {username: player.username, socketId: player.socketId}
-		});
-	}
-	else console.log(player.username + 'is playing');	
-};
-
-RunTicTacToe.prototype.showList = function(ul, data) {
-	var stateCircle;
-	for(var i = 0; i < data.length; i++) {
-		var user = data[i];
-		if(user.socketId === this.client.socketId) {
-			data.splice(i, 1); 
-			i--;
-			continue;
+			if(user.state === 'playing') {
+				stateCircle = '<div class="red state"></div>';
+			}
+			ul.append('<li>' + stateCircle + '<a>' + user.username + '</a></li>');
 		}
-		if(user.state === 'available') {
-		    stateCircle = '<div class="green state"></div>';
-		}
-		if(user.state === 'playing') {
-			stateCircle = '<div class="red state"></div>';
-		}
-		ul.append('<li>' + stateCircle + '<a>' + user.username + '</a></li>');
+		return data;
 	}
-	return data;
-};
+}
 
 function userLogin(username, password, type) {
 	var socket = io();
@@ -309,8 +305,9 @@ function userLogin(username, password, type) {
 		
 	socket.on('authenticated', () => {
 		console.log('User authentictaed!');
+		$('.username').remove();
 		$('header li:first-child svg').after('<div class="username">Hi, ' + username + '</div>');
-		var runTicTacToe = new RunTicTacToe(socket, user);
+		RunTicTacToe(socket, user);
 	});
 	
 	socket.on('unauthorized', () => {
