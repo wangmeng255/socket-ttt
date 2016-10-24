@@ -1,11 +1,11 @@
 "use strict"
 
-var Game = function(socket, players, step) {
-	this.socket = socket;
-	this.players = players;
-	this.steps = step;
-	this.board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-	this.winArr = [
+var Game = function(socket, players, steps) {
+	var socket = socket;
+	var players = players;
+	var steps = steps;
+	var board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+	var winArr = [
 				[1, 2, 3, 6, 4, 8],
 				[0, 2, 4, 7],
 				[0, 1, 5, 8, 4, 6],
@@ -16,194 +16,169 @@ var Game = function(socket, players, step) {
 				[1, 4, 6, 8],
 				[0, 4, 2, 5, 6, 7]
 			];
+	
+	var TTT = $('.TTT');
+	var result = TTT.find('.result h2');
+	
+	var sender;
+	if(steps & 1) {
+		sender = false; 
+		result.text(players.sender.username + "'s turn"); 
+		TTT.find('.board input').prop('disabled', true);
+	}
+	else {
+		sender = true; 
+		result.text('your turn'); 
+		TTT.find('.board input').prop('disabled', false);
+	}
+	
+	TTT.on('change', '.block input', oneStep)
+	.on('click', '.result input', restart);
+	
+	socket.on('sender turn', playerTurn);
+	socket.on('receiver turn', playerTurn);
+	
+	function playerTurn(data) {
+		var eventBlock = $($('.TTT').find('.block').get(data.position));
+		var circle = 1;
+		var cross = -1;
+		if(!data.circle) {
+			var cloneCross = $(".hidden-cross").clone();
+			cloneCross.attr("class", "cross");
+			cloneCross.appendTo(eventBlock);
+			board[data.position] = cross;
+		}
+		else {
+			var cloneCircle = $(".hidden-circle").clone();
+			cloneCircle.attr("class", "circle");
+			cloneCircle.appendTo(eventBlock);
+			board[data.position] = circle;
+		}
+		
+		var playBoard = TTT.find(".board");
+		var boardInput = playBoard.find("input");
+		var finished = isFinished(sender, data.position, playBoard);
+		if(!finished) {
+			steps = data.steps + 1;
+			result.text('your turn'); 
+			boardInput.prop('disabled', false);
+		}
+		else {
+			var closestBoard = playBoard;
+			closestBoard.addClass('finish');
+			closestBoard.find('input').each(function() {
+				if($(this).prop('disabled') === false) $(this).prop('disabled', true);
+			});
+		}
+	}
+	
+	function oneStep(event) {
+		var eventTarget = $(event.target);
+		var eventBlock = $(event.target).parent('.block');
+		var boardInput = TTT.find('.board input');
+		eventBlock.find('input').prop('disabled', true);
+		eventBlock.css('pointer-events', 'none');
+		
+		var circle = 1;
+		var cross = -1;
+		
+		var blockIndex = eventBlock.closest(".board").find(".block").index(eventBlock);
+		if(steps & 1) {
+			var cloneCross = $(".hidden-cross").clone();
+			cloneCross.attr("class", "cross");
+			cloneCross.appendTo(eventBlock);
+			board[blockIndex] = cross;
+			socket.emit('receiver turn', {players: players, position: blockIndex, steps: steps, circle: false});
+		}
+		else {
+			var cloneCircle = $(".hidden-circle").clone();
+			cloneCircle.attr("class", "circle");
+			cloneCircle.appendTo(eventBlock);
+			board[blockIndex] = circle;
+			socket.emit('sender turn', {players: players, position: blockIndex, steps: steps, circle: true});
+		}
+		
+		var finished = isFinished(sender, blockIndex, eventTarget.closest(".board"));
+		if(!finished) {
+			steps += 1;
 			
-	this.TTT = $('.TTT');
-	this.result = this.TTT.find('.result h2');
-	
-	if(this.steps & 1) {
-		this.sender = false; 
-		this.result.text(this.players.receiver.username + "'s turn"); 
-		this.TTT.find('.board input').prop('disabled', true);
-	}
-	else {
-		this.sender = true; 
-		this.result.text('your turn'); 
-	}
-	
-	this.TTT.on('change', '.block input', this.oneStep.bind(this))
-	.on('click', '.result input', this.restart.bind(this));
-	
-	socket.on('sender turn', this.playerTurn.bind(this));
-	socket.on('receiver turn', this.playerTurn.bind(this));
-};
-
-Game.prototype.playerTurn = function(data) {
-	var eventBlock = $($('.TTT').find('.block').get(data.position));
-	var circle = 1;
-	var cross = -1;
-	if(!data.circle) {
-		var cloneCross = $(".hidden-cross").clone();
-		cloneCross.attr("class", "cross");
-		cloneCross.appendTo(eventBlock);
-		this.board[data.position] = cross;
-	}
-	else {
-		var cloneCircle = $(".hidden-circle").clone();
-		cloneCircle.attr("class", "circle");
-		cloneCircle.appendTo(eventBlock);
-		this.board[data.position] = circle;
-	}
-	
-	var board = this.TTT.find(".board");
-	var boardInput = board.find("input");
-	var finished = this.isFinished(this.sender, data.position, board);
-	if(!finished) {
-		this.steps = data.steps + 1;
-		
-		if(this.sender) {
-			if(this.steps & 1) { 
-				this.result.text(this.players.receiver.username + "'s turn");
+			if(sender) {
+				result.text(players.receiver.username + "'s turn");
 				boardInput.prop('disabled', true);
 			}
-			else { 
-				this.result.text('your turn'); 
-				boardInput.prop('disabled', false);
+			else {
+				result.text(players.sender.username + "'s turn");
+				boardInput.prop('disabled', true);
 			}
 		}
 		else {
-			if(this.steps & 1) {
-				this.result.text('your turn');
-				boardInput.prop('disabled', false);
-				
-			}
-			else {
-				this.result.text(this.players.receiver.username + "'s turn");
-				boardInput.prop('disabled', true);
-			}
+			var closestBoard = eventTarget.closest(".board");
+			closestBoard.addClass("finish");
+			closestBoard.find("input").each(function() {
+				if($(this).prop("disabled")===false) $(this).prop("disabled", "true");
+			});
 		}
 	}
-	else {
-		var closestBoard = board;
-		closestBoard.addClass('finish');
-		closestBoard.find('input').each(function() {
-			if($(this).prop('disabled') === false) $(this).prop('disabled', true);
-		});
-	}
-};
-
-Game.prototype.oneStep = function(event) {
-	var eventTarget = $(event.target);
-	var eventBlock = $(event.target).parent('.block');
-	var boardInput = this.TTT.find('.board input');
-	eventBlock.find('input').prop('disabled', true);
-	eventBlock.css('pointer-events', 'none');
 	
-	var circle = 1;
-	var cross = -1;
-	
-	var blockIndex = eventBlock.closest(".board").find(".block").index(eventBlock);
-	if(this.steps & 1) {
-		var cloneCross = $(".hidden-cross").clone();
-		cloneCross.attr("class", "cross");
-		cloneCross.appendTo(eventBlock);
-		this.board[blockIndex] = cross;
-		this.socket.emit('receiver turn', {players: this.players, position: blockIndex, steps: this.steps, circle: false});
-	}
-	else {
-		var cloneCircle = $(".hidden-circle").clone();
-		cloneCircle.attr("class", "circle");
-		cloneCircle.appendTo(eventBlock);
-		this.board[blockIndex] = circle;
-		this.socket.emit('sender turn', {players: this.players, position: blockIndex, steps: this.steps, circle: true});
-	}
-	
-	var finished = this.isFinished(this.sender, blockIndex, eventTarget.closest(".board"));
-	if(!finished) {
-		this.steps += 1;
-		
-		if(this.sender) {
-			if(this.steps & 1) { 
-				this.result.text(this.players.receiver.username + "'s turn");
-				boardInput.prop('disabled', true);
-			}
-			else { 
-				this.result.text('your turn'); 
-				boardInput.prop('disabled', false);
+	function isFinished(sender, blockIndex, boardSelector) {
+		var sum = 0;
+		for(var i = 0; i < winArr[blockIndex].length; i += 2) {
+			sum = board[blockIndex] + 
+					  board[winArr[blockIndex][i]] +
+					  board[winArr[blockIndex][i + 1]];
+			if(sum === -3 || sum === 3) {
+				if(sum === -3) {
+					if(sender) {
+						boardSelector.closest('.game').find('h2').text('Sorry, you lose!');
+						socket.emit('lose game', {username: players.sender.username, socketId: socket.id});
+					}
+					else {
+						boardSelector.closest('.game').find('h2').text('Cong! you win!');
+						socket.emit('win game', {username: players.receiver.username, socketId: socket.id});
+					}
+				}
+				if(sum === 3) {
+					if(sender) {
+						boardSelector.closest('.game').find('h2').text('Cong! you win!');
+						socket.emit('win game', {username: players.sender.username, socketId: socket.id});
+					}
+					else {
+						boardSelector.closest('.game').find('h2').text('Sorry, you lose!');
+						socket.emit('lose game', {username: players.receiver.username, socketId: socket.id});
+					}
+				}
+				var $block = boardSelector.find('.block');
+				$($block.get(blockIndex)).find('svg').css('stroke', 'red');
+				$($block.get(winArr[blockIndex][i])).find('svg').css('stroke', 'red');
+				$($block.get(winArr[blockIndex][i + 1])).find('svg').css('stroke', 'red');
+				return true;
 			}
 		}
-		else {
-			if(this.steps & 1) {
-				this.result.text('your turn');
-				boardInput.prop('disabled', false);
-			}
-			else {
-				this.result.text(this.players.receiver.username + "'s turn");
-				boardInput.prop('disabled', true);
-			}
-		}
-	}
-	else {
-		var closestBoard = eventTarget.closest(".board");
-		closestBoard.addClass("finish");
-		closestBoard.find("input").each(function() {
-			if($(this).prop("disabled")===false) $(this).prop("disabled", "true");
-		});
-	}
-};
-
-Game.prototype.restart = function(event) {
-	var board = $(event.target).closest('.game').find('.board');
-	this.steps = 0;
-	this.board.forEach(function(val, i, array) {
-		array[i] = 0;
-	});
-	board.closest('.game').find('h2').html('&nbsp;');
-	board.html($('.hidden').find(".board").children().clone());
-	board.removeClass('finish');
-};
-
-Game.prototype.isFinished = function (sender, blockIndex, boardSelector) {
-	var sum = 0;
-	for(var i = 0; i < this.winArr[blockIndex].length; i += 2) {
-		sum = this.board[blockIndex] + 
-				  this.board[this.winArr[blockIndex][i]] +
-				  this.board[this.winArr[blockIndex][i + 1]];
-		if(sum === -3 || sum === 3) {
-			if(sum === -3) {
-				if(sender) {
-					boardSelector.closest('.game').find('h2').text('Sorry, you lose!');
-					this.socket.emit('lose game', {username: this.players.sender.username, socketId: this.socket.id});
-				}
-				else {
-					boardSelector.closest('.game').find('h2').text('Cong! you win!');
-					this.socket.emit('win game', {username: this.players.receiver.username, socketId: this.socket.id});
-				}
-			}
-			if(sum === 3) {
-				if(sender) {
-					boardSelector.closest('.game').find('h2').text('Cong! you win!');
-					this.socket.emit('win game', {username: this.players.sender.username, socketId: this.socket.id});
-				}
-				else {
-					boardSelector.closest('.game').find('h2').text('Sorry, you lose!');
-					this.socket.emit('lose game', {username: this.players.receiver.username, socketId: this.socket.id});
-				}
-			}
-			var $block = boardSelector.find('.block');
-			$($block.get(blockIndex)).find('svg').css('stroke', 'red');
-			$($block.get(this.winArr[blockIndex][i])).find('svg').css('stroke', 'red');
-			$($block.get(this.winArr[blockIndex][i + 1])).find('svg').css('stroke', 'red');
+		if(8 <= steps) {
+			if(sender) socket.emit('draw game', {username: players.sender.username, socketId: socket.id});
+			else socket.emit('draw game', {username: players.receiver.username, socketId: socket.id});
+			boardSelector.closest('.game').find('h2').text('draw');
 			return true;
 		}
+		return false;
 	}
-	if(8 <= this.steps) {
-		if(sender) this.socket.emit('draw game', {username: this.players.sender.username, socketId: this.socket.id});
-		else this.socket.emit('draw game', {username: this.players.receiver.username, socketId: this.socket.id});
-		boardSelector.closest('.game').find('h2').text('draw');
-		return true;
+	
+	function restart(event) {
+		var playBoard = $(event.target).closest('.game').find('.board');
+		board.forEach(function(val, i, array) {
+			array[i] = 0;
+		});
+		playBoard.closest('.game').find('h2').html('&nbsp;');
+		playBoard.html($('.hidden').find(".board").children().clone());
+		playBoard.removeClass('finish');
+		
+		TTT.off('change', '.block input', oneStep)
+		.off('click', '.result input', restart);
+	
+		socket.off('sender turn', playerTurn);
+		socket.off('receiver turn', playerTurn);
 	}
-	return false;
-};
+}
 
 var RunTicTacToe = function(socket, user) {
 	this.usersArray = [];
@@ -257,7 +232,7 @@ RunTicTacToe.prototype.requestToPlay = function(data) {
 	        	$(this.playersLi.get(i)).find('.state').toggleClass('green').addClass('red');
 			}
         }
-		this.game = new Game(this.socket, data, 1);
+		this.game = Game(this.socket, data, 1);
 	} else {
 		this.socket.emit('response from receiver', {sender: data.sender, receiver: data.receiver, accept: false});
 	}
@@ -265,7 +240,7 @@ RunTicTacToe.prototype.requestToPlay = function(data) {
 
 RunTicTacToe.prototype.responseFromReceiver = function(data) {
 	if(data.accept) {
-        this.game = new Game(this.socket, data, 0);
+        this.game = Game(this.socket, data, 0);
         for(var i = 0; i < this.usersArray.length; i++) {
         	if(this.usersArray[i].socketId === data.receiver.socketId) {
 	        	this.usersArray[i].state = 'busy';
@@ -283,6 +258,14 @@ RunTicTacToe.prototype.switchInputonClick = function(event) {
 		this.socket.emit('log out');
 		this.logIn.show();
 		this.switch.css('pointer-events', 'none');
+		this.switchInput.off('click', this.switchInputonClick);
+		this.players.off('click', this.playersonClick);
+		this.switchInputonClick = null;
+		this.playersonClick = null;
+		this.usersArray = null;
+    	this.client = null;
+    	this.game = null;
+    	this.socket = null;
 	}
 	else this.switch.css('pointer-events', 'auto');
 };
@@ -326,6 +309,7 @@ function userLogin(username, password, type) {
 		
 	socket.on('authenticated', () => {
 		console.log('User authentictaed!');
+		$('header li:first-child svg').after('<div class="username">Hi, ' + username + '</div>');
 		var runTicTacToe = new RunTicTacToe(socket, user);
 	});
 	

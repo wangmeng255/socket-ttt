@@ -119,12 +119,12 @@ io.on('connection', function(socket){
     });
     
     socket.on('receiver turn', function(data) {
-        console.log(data.receiver.username, 'receiver turn');
+        console.log(data.players.receiver.username, 'receiver turn');
         io.to(data.players.sender.socketId).emit('receiver turn', data);
     });
     
     socket.on('sender turn', function(data) {
-        console.log(data.sender.username, 'sender turn');
+        console.log(data.players.sender.username, 'sender turn');
         io.to(data.players.receiver.socketId).emit('sender turn', data);
     });
     
