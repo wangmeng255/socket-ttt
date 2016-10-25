@@ -193,6 +193,7 @@ var RunTicTacToe = function(socket, user) {
     var players = $('#players');
     var gameTitle = $('.game h1');
     var TTT = $('.TTT');
+    var username = $('.username');
     
     switchInput.prop('checked', true);
     switchLogOut.css('pointer-events', 'auto');
@@ -219,20 +220,34 @@ var RunTicTacToe = function(socket, user) {
 	}
 	
 	function requestToPlay(data) {
-		var accept = confirm(data.sender.username + ' wants to play with you, do you accept?');
-		if (accept === true) {
-			socket.emit('response from receiver', {sender: data.sender, receiver: data.receiver, accept: true});
-			for(var i = 0; i < usersArray.length; i++) {
-				if(usersArray[i].socketId === data.sender.socketId) {
-		        	usersArray[i].state = 'busy';
-		        	gameTitle.text('playing with ' + data.sender.username);
-		        	$(playersLi.get(i)).find('.state').toggleClass('green').addClass('red');
-				}
-	        }
-			Game(socket, data, 1);
-		} else {
-			socket.emit('response from receiver', {sender: data.sender, receiver: data.receiver, accept: false});
-		}
+		var confirmPopup = $('.confirm');
+		confirmPopup.find('p').html('<strong>' + data.sender.username + '</strong> wants to play with you, do you accept?');
+		confirmPopup.addClass('is-visible');
+		
+		var accept = false;
+		confirmPopup.on('click', function(event){
+			if($(event.target).is('.confirm .cd-buttons li:first-child a')) {
+				accept = true;
+			}
+			if($(event.target).is('.confirm .cd-buttons li:last-child a')) {
+				accept = false;
+			}
+			$(this).removeClass('is-visible');
+			
+			if (accept === true) {
+				socket.emit('response from receiver', {sender: data.sender, receiver: data.receiver, accept: true});
+				for(var i = 0; i < usersArray.length; i++) {
+					if(usersArray[i].socketId === data.sender.socketId) {
+			        	usersArray[i].state = 'busy';
+			        	gameTitle.text('playing with ' + data.sender.username);
+			        	$(playersLi.get(i)).find('.state').toggleClass('green').addClass('red');
+					}
+		        }
+				Game(socket, data, 1);
+			} else {
+				socket.emit('response from receiver', {sender: data.sender, receiver: data.receiver, accept: false});
+			}
+		});
 	}
 	
 	function responseFromReceiver(data) {
@@ -246,7 +261,17 @@ var RunTicTacToe = function(socket, user) {
 				}
 	        }
 	    }
-		else {alert(data.receiver.username + 'is busy!')};
+		else {
+			var alertPopup = $('.alert');
+			alertPopup.find('p').html('<strong>' + data.receiver.username + '</strong> can\'t play now!');
+			alertPopup.addClass('is-visible');
+			
+			alertPopup.on('click', function(){
+				if($(event.target).is('.cd-popup-close')) {
+					$(this).removeClass('is-visible');
+				}
+			});
+		}
 	}
 	
 	function switchInputonClick(event) {
@@ -255,7 +280,7 @@ var RunTicTacToe = function(socket, user) {
 			socket.emit('log out');
 			TTT.hide();
 			logIn.show();
-			$('.username').remove();
+			username.remove();
 			switchLogOut.css('pointer-events', 'none');
 			switchInput.off('click', switchInputonClick);
 			
