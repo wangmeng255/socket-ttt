@@ -1,7 +1,13 @@
+@charset "utf-8";
+@import url(http://weloveiconfonts.com/api/?family=fontawesome);
+
 * {
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
+}
+body {
+	background-color: #f5f6f7;
 }
 header {
 	position: fixed;
@@ -66,21 +72,164 @@ header input {
 	font-size: 1.3rem;
 	width: 7rem;
 }
+
+[class*="fontawesome-"]:before {
+  font-family: 'FontAwesome', sans-serif;
+}
+
+p {
+  line-height: 1.5em;
+}
+
+after { 
+	clear: both; 
+}
 #sign-up-link, #log-in-link, button[type="submit"] {
 	padding: 0 0.5rem;
 	font-size: 1.2rem;
 }
 #log-in, #sign-up {
+	display: flex;
 	width: 100vw;
 	height: 100vh;
-	z-index: 1000;
+	z-index: 999;
 	margin-top: 10rem;
+	background: #2c3338;
+  	color: #606468;
+  	font: 87.5%/1.5em 'Open Sans', sans-serif;
+  	margin: 0;
+}
+#sign-up {
+	display: none;
 }
 #log-in form, #sign-up form {
+	height: auto;
+	position: relative;
 	max-width: 22rem;
-	margin: 0 auto;
 	vertical-align: middle;
+	margin: auto auto;
+  	padding: 1.375rem 1.375rem 1rem 1.375rem;
+  	width: 100%;
+  	border-radius: 0.3125rem;
+  	background: #282e33;
+  	border-top: 0.1875rem solid #434a52;
+  	border-bottom: 0.1875rem solid #434a52;
 }
+#log-in input, #sign-up input {
+	border: none;
+  	font-family: 'Open Sans', Arial, sans-serif;
+  	font-size: 1rem;
+  	line-height: 1.5em;
+  	padding: 0;
+  	-webkit-appearance: none;
+}
+#log-in form span, #sign-up form span {
+  	background-color: #363b41;
+  	border-radius: 0.1875rem 0 0 0.1875rem;
+  	border-right: 0.1875rem solid #434a52;
+  	color: #606468;
+  	display: block;
+  	float: left;
+  	line-height: 3.125rem;
+  	text-align: center;
+  	width: 17.5%;
+  	height: 3.125rem;
+}
+#log-in form input[type="text"], #sign-up form input[type="text"] {
+  	background-color: #3b4148;
+  	border-radius: 0 0.1875rem 0.1875rem 0;
+  	color: #a9a9a9;
+  	margin-bottom: 1rem;
+  	padding: 0 1rem;
+  	width: 82.5%;
+  	height: 3.125rem;
+}
+#log-in form input[type="password"], #sign-up form input[type="password"] {
+  	background-color: #3b4148;
+  	border-radius: 0 0.1875rem 0.1875rem 0;
+  	color: #a9a9a9;
+  	margin-bottom: 1rem;
+  	padding: 0 1rem;
+  	width: 82.5%;
+  	height: 3.125rem;
+}
+#log-in form button[type="submit"], #sign-up form button[type="submit"] {
+  	background: #b5cd60;
+  	border: 0;
+  	width: 100%;
+  	height: 2.5rem;
+  	border-radius: 0.1875rem;
+  	color: white;
+  	cursor: pointer;
+  	transition: background 0.3s ease-in-out;
+}
+#log-in form button[type="submit"]:hover, #sign-up form button[type="submit"]:hover {
+  	background: #16aa56;
+}
+#log-in form p, #sign-up form p {
+	padding-top: 0.7rem;
+	text-align: right;
+}
+#log-in form a, #sign-up form a {
+    font-size: 0.95rem;
+    color: #a9a9a9;
+    text-decoration: none;
+    padding: 1rem 0 0 0;
+    text-align: center;
+}
+#log-in form a:hover, #sign-up form a:hover {
+	color: #b5cd60;
+}
+
+/* Popup container - can be anything you want */
+#log-in .popup, #sign-up .popup {
+	width: 100%;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* The actual popup */
+#log-in .popup .popuptext, #sign-up .popup .popuptext {
+	visibility: hidden;
+	border: none;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 0;
+    position: absolute;
+    z-index: 1;
+    top: 0px;
+    left: 130%;
+    margin-left: -80px;
+    min-width: 60%;
+    height: 3.125rem;
+    float: initial;
+}
+
+/* Toggle this class - hide and show the popup */
+#log-in .popup .show, #sign-up .popup .show {
+    visibility: visible;
+    -webkit-animation: fadeIn 0.5s;
+    animation: fadeIn 0.5s;
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity:1 ;}
+}
+
 /* The switch - the box around the slider */
 .switch {
 	pointer-events: none;
@@ -144,12 +293,15 @@ input:checked + .slider:before {
  	border-radius: 50%;
 }
 .TTT {
-	margin-top: 2.7rem;
+	margin-top: 2.5rem;
 	margin-left: 0.5%;
 	margin-right: 0.5%;
 	overflow: auto;
 	display: flex;
 	flex-direction: row;
+}
+.TTT {
+	display: none;
 }
 h1 {
 	padding: 1rem 0;
@@ -170,7 +322,7 @@ form {
 	border: 1px solid #c3c3c3;
 	box-shadow: -3px 4px 17px -2px #000000;
 	opacity: 0.75;
-	margin: 1rem 1rem 0 1rem;
+	margin: 0.2rem 1rem 0 1rem;
 }
 #players ul {
 	line-height: 2.5rem;
@@ -180,7 +332,7 @@ form {
 	padding: 0.3rem;
 	list-style-type: none;
 	font-family: Arial, Helvetica, sans-serif;
-	font-weight: 450;
+	font-weight: bold;
 }
 #players li {
 	text-align: left;
@@ -291,6 +443,7 @@ form {
 td {
 	width: 7.5rem;
 	height: 7.5rem;
+	max-height: 7.5rem;
 	padding: 0;
 	box-sizing: border-box;
 }
@@ -330,6 +483,12 @@ td {
 	stroke: #a6a6a6;
 	width: 6.7rem;
 	height: 6.7rem;
+	
+	position:absolute;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
 }
 .circle {
 	stroke-width: 15;

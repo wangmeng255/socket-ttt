@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<title>Tic Tac Toe</title>
 	<link href='//fonts.googleapis.com/css?family=Cinzel+Decorative' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700">
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -72,20 +73,28 @@
 	</header>
 	<section id="log-in">
 		<form class="log-in">
-			<label for="username">Name</label><br>
-			<input id="log-username" type="text" placeholder="John"><br>
-			<label for="log-password">Password</label><br>
-			<input id="log-password" type="password"><br>
-			<button id="log-submit" type="submit">Go</button><a id="sign-up-link" href="#sign-up">Register</a>
+        	<span class="fontawesome-user"></span>
+          	<input type="text" id="log-username" placeholder="Username">
+          	<div class="popup">
+	        	<span class="fontawesome-lock"></span>
+	          	<input type="password" id="log-password" placeholder="Password">
+	          	<span class="popuptext">User not authorized!</span>
+          	</div>
+        	<button type="submit" id="log-submit">Log in</button>
+        	<p>Go to &nbsp; <a id="sign-up-link" href="#sign-up">Sign up</a></p>
 		</form>
 	</section>
 	<section id="sign-up">
 		<form class="sign-up">
-			<label for="sign-username">Name</label><br>
-			<input id="sign-username" type="text" placeholder="John"><br>
-			<label for="sign-password">Password</label><br>
-			<input id="sign-password" type="password"><br>
-			<button id="sign-submit" type="submit">Create an Account</button><a id="log-in-link" href="#log-in">Log in</a>
+			<span class="fontawesome-user"></span>
+          	<input type="text" id="sign-username" placeholder="Username">
+          	<div class="popup">
+	        	<span class="fontawesome-lock"></span>
+	          	<input type="password" id="sign-password" placeholder="Password">
+	          	<span class="popuptext">User not authorized!</span>
+          	</div>
+        	<button type="submit" id="sign-submit">Sign up</button>
+        	<p>Go to &nbsp; <a id="log-in-link" href="#log-in">Log in</a></p>
 		</form>
 	</section>
 	<section class="TTT">
@@ -143,8 +152,7 @@
     		</div>
 		</div>
 		<div id="players">
-		    <ul id="players-ul">players
-		    </ul>
+		    <ul id="players-ul">Players</ul>
 		</div>
 	</section>
 	<section class="hidden-sec">

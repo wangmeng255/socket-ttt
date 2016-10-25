@@ -1,8 +1,8 @@
 "use strict"
 
 var Game = function(socket, players, steps) {
-	var players = players;
-	var steps = steps;
+	//var players = players;
+	//var steps = steps;
 	var board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 	var winArr = [
 				[1, 2, 3, 6, 4, 8],
@@ -192,6 +192,7 @@ var RunTicTacToe = function(socket, user) {
     var playersLi;
     var players = $('#players');
     var gameTitle = $('.game h1');
+    var TTT = $('.TTT');
     
     switchInput.prop('checked', true);
     switchLogOut.css('pointer-events', 'auto');
@@ -252,9 +253,12 @@ var RunTicTacToe = function(socket, user) {
 		var logOut = event.target;
 		if(!logOut.checked) {
 			socket.emit('log out');
+			TTT.hide();
 			logIn.show();
+			$('.username').remove();
 			switchLogOut.css('pointer-events', 'none');
 			switchInput.off('click', switchInputonClick);
+			
 			players.off('click', playersonClick);
 			socket.off('get usersArray', getUsersArray);
 			socket.off('user joined', getUsersArray);
@@ -299,7 +303,7 @@ var RunTicTacToe = function(socket, user) {
 
 function userLogin(username, password, type) {
 	var socket = io();
-		
+	
 	var user = {username: username, type: type, password: password};
 	socket.emit('authentication', user);
 		
@@ -307,11 +311,17 @@ function userLogin(username, password, type) {
 		console.log('User authentictaed!');
 		$('.username').remove();
 		$('header li:first-child svg').after('<div class="username">Hi, ' + username + '</div>');
+		$('.TTT').show();
+		$('.TTT').css('display', 'flex');
 		RunTicTacToe(socket, user);
 	});
 	
 	socket.on('unauthorized', () => {
 		console.log('User not authorized!');
+		
+		var popup = $('.popuptext');
+		popup.toggleClass('show');
+		popup.focus();
 	});
 }
 
@@ -333,5 +343,20 @@ $(function() {
 		var password = $('#sign-password').val();
 		
 		userLogin(username, password, 'sign-up');
+	});
+	
+	$('#sign-up-link').click(function() {
+		$('#log-in').hide();
+		$('#sign-up').show();
+		$('#sign-up').css('display', 'flex');
+	});
+	
+	$('#log-in-link').click(function() {
+		$('#log-in').show();
+		$('#sign-up').hide();
+	});
+	
+	$('form input').focus(function() {
+		$('.popuptext').removeClass('show');
 	});
 });
