@@ -379,6 +379,12 @@ form {
     margin: 0 1rem 0 0;
     background-color: green;
 }
+#players li a {
+	margin-right: 1rem;
+}
+#players li img {
+	vertical-align: middle;
+}
 .board input[type="checkbox"] {
 	position: absolute;
 	height: 100%;
@@ -572,7 +578,7 @@ td {
   	height: 3.75rem;
   	line-height: 3.75rem;
   	text-transform: uppercase;
-  	color: #FFF;
+  	color: #ffffff;
   	-webkit-transition: background-color 0.2s;
   	-moz-transition: background-color 0.2s;
   	transition: background-color 0.2s;

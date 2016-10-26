@@ -1,8 +1,6 @@
 "use strict"
 
 var Game = function(socket, players, steps) {
-	//var players = players;
-	//var steps = steps;
 	var board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 	var winArr = [
 				[1, 2, 3, 6, 4, 8],
@@ -164,18 +162,22 @@ var Game = function(socket, players, steps) {
 	
 	function restart(event) {
 		var playBoard = $(event.target).closest('.game').find('.board');
-		board.forEach(function(val, i, array) {
-			array[i] = 0;
-		});
-		playBoard.closest('.game').find('h2').html('&nbsp;');
-		playBoard.html($('.hidden').find(".board").children().clone());
-		playBoard.removeClass('finish');
+		cleanBoard(playBoard);
 		
 		TTT.off('change', '.block input', oneStep)
 		.off('click', '.result input', restart);
 	
 		socket.off('sender turn', playerTurn);
 		socket.off('receiver turn', playerTurn);
+	}
+	
+	function cleanBoard(playBoard) {
+		board.forEach(function(val, i, array) {
+			array[i] = 0;
+		});
+		playBoard.closest('.game').find('h2').html('&nbsp;');
+		playBoard.html($('.hidden').find(".board").children().clone());
+		playBoard.removeClass('finish');
 	}
 }
 
@@ -194,6 +196,8 @@ var RunTicTacToe = function(socket, user) {
     var gameTitle = $('.game h1');
     var TTT = $('.TTT');
     var username = $('.username');
+    var playBoard = $('.game .board');
+    var restart = $('.result input');
     
     switchInput.prop('checked', true);
     switchLogOut.css('pointer-events', 'auto');
@@ -244,6 +248,8 @@ var RunTicTacToe = function(socket, user) {
 					}
 		        }
 				Game(socket, data, 1);
+				if(playBoard.hasClass('finish')) restart.trigger('click');
+				
 			} else {
 				socket.emit('response from receiver', {sender: data.sender, receiver: data.receiver, accept: false});
 			}
@@ -251,22 +257,28 @@ var RunTicTacToe = function(socket, user) {
 	}
 	
 	function responseFromReceiver(data) {
+		var i = 0;
+		for(; i < usersArray.length; i++) {
+	        if(usersArray[i].socketId === data.receiver.socketId) {
+		        $(playersLi.get(i)).find('img').remove();
+		        break;
+			}
+	    }
+		$(playersLi.get(i)).css('pointer-events', 'auto');
+		
 		if(data.accept) {
 	        Game(socket, data, 0);
-	        for(var i = 0; i < usersArray.length; i++) {
-	        	if(usersArray[i].socketId === data.receiver.socketId) {
-		        	usersArray[i].state = 'busy';
-		        	gameTitle.text('playing with ' + data.receiver.username);
-		        	$(playersLi.get(i)).find('.state').toggleClass('green').addClass('red');
-				}
-	        }
+	        if(playBoard.hasClass('finish')) restart.trigger('click');
+		    usersArray[i].state = 'busy';
+		    gameTitle.text('playing with ' + data.receiver.username);
+		    $(playersLi.get(i)).find('.state').toggleClass('green').addClass('red');
 	    }
 		else {
 			var alertPopup = $('.alert');
 			alertPopup.find('p').html('<strong>' + data.receiver.username + '</strong> can\'t play now!');
 			alertPopup.addClass('is-visible');
 			
-			alertPopup.on('click', function(){
+			alertPopup.on('click', function(event){
 				if($(event.target).is('.cd-popup-close')) {
 					$(this).removeClass('is-visible');
 				}
@@ -295,14 +307,28 @@ var RunTicTacToe = function(socket, user) {
 	}
 	
 	function playersonClick(event) {
-		var player = usersArray[playersLi.index($(event.target).closest('li'))];
+		var closestLi = $(event.target).closest('li');
+		closestLi.css('pointer-events', 'none');
+		var player = usersArray[playersLi.index(closestLi)];
+		
 		if(player.state === 'available') {
+			closestLi.append('<img src="waiting.gif" alt="waiting">');
 			socket.emit('send game request', {
 				sender: {username: client.username}, 
 				receiver: {username: player.username, socketId: player.socketId}
 			});
 		}
-		else console.log(player.username + 'is playing');	
+		else {
+			var alertPopup = $('.alert');
+			alertPopup.find('p').html('<strong>' + player.username + '</strong> is playing!');
+			alertPopup.addClass('is-visible');
+			
+			alertPopup.on('click', function(event){
+				if($(event.target).is('.cd-popup-close')) {
+					$(this).removeClass('is-visible');
+				}
+			});
+		}
 	}
 	
 	function showList(ul, data) {
