@@ -29,8 +29,7 @@ var Game = function(socket, players, steps) {
 		TTT.find('.board input').prop('disabled', false);
 	}
 	
-	TTT.on('change', '.block input', oneStep)
-	.on('click', '.result input', restart);
+	TTT.on('change', '.block input', oneStep);
 	
 	socket.on('sender turn', playerTurn);
 	socket.on('receiver turn', playerTurn);
@@ -160,17 +159,6 @@ var Game = function(socket, players, steps) {
 		return false;
 	}
 	
-	function restart(event) {
-		var playBoard = $(event.target).closest('.game').find('.board');
-		cleanBoard(playBoard);
-		
-		TTT.off('change', '.block input', oneStep)
-		.off('click', '.result input', restart);
-	
-		socket.off('sender turn', playerTurn);
-		socket.off('receiver turn', playerTurn);
-	}
-	
 	function cleanBoard(playBoard) {
 		board.forEach(function(val, i, array) {
 			array[i] = 0;
@@ -179,6 +167,17 @@ var Game = function(socket, players, steps) {
 		playBoard.html($('.hidden').find(".board").children().clone());
 		playBoard.removeClass('finish');
 	}
+	
+	function restart(playBoard) {
+		cleanBoard(playBoard);
+		
+		TTT.off('change', '.block input', oneStep);
+	
+		socket.off('sender turn', playerTurn);
+		socket.off('receiver turn', playerTurn);
+	}
+	
+	return restart;
 }
 
 var RunTicTacToe = function(socket, user) {
@@ -197,7 +196,6 @@ var RunTicTacToe = function(socket, user) {
     var TTT = $('.TTT');
     var username = $('.username');
     var playBoard = $('.game .board');
-    var restart = $('.result input');
     
     switchInput.prop('checked', true);
     switchLogOut.css('pointer-events', 'auto');
@@ -243,12 +241,12 @@ var RunTicTacToe = function(socket, user) {
 				for(var i = 0; i < usersArray.length; i++) {
 					if(usersArray[i].socketId === data.sender.socketId) {
 			        	usersArray[i].state = 'busy';
-			        	gameTitle.text('playing with ' + data.sender.username);
+			        	gameTitle.html('playing with <span>' + data.sender.username.toUpperCase() + '</span>');
 			        	$(playersLi.get(i)).find('.state').toggleClass('green').addClass('red');
 					}
 		        }
-				Game(socket, data, 1);
-				if(playBoard.hasClass('finish')) restart.trigger('click');
+				var restart = Game(socket, data, 1);
+				if(playBoard.hasClass('finish')) restart(playBoard);
 				
 			} else {
 				socket.emit('response from receiver', {sender: data.sender, receiver: data.receiver, accept: false});
@@ -267,10 +265,10 @@ var RunTicTacToe = function(socket, user) {
 		$(playersLi.get(i)).css('pointer-events', 'auto');
 		
 		if(data.accept) {
-	        Game(socket, data, 0);
-	        if(playBoard.hasClass('finish')) restart.trigger('click');
+	        var restart = Game(socket, data, 0);
+	        if(playBoard.hasClass('finish')) restart(playBoard);
 		    usersArray[i].state = 'busy';
-		    gameTitle.text('playing with ' + data.receiver.username);
+		    gameTitle.html('playing with <span>' + data.receiver.username.toUpperCase() + '</span>');
 		    $(playersLi.get(i)).find('.state').toggleClass('green').addClass('red');
 	    }
 		else {

@@ -301,9 +301,16 @@ input:checked + .slider:before {
 	display: none;
 }
 h1 {
+	color: #a0a0a0;
 	padding: 1rem 0;
 	text-align: center;
 	font-family: Arial, Helvetica, sans-serif;
+}
+h1 span {
+	color: #000000;
+}
+h1 .green {
+	margin: 0;
 }
 .game {
 	flex-grow: 3;
@@ -418,28 +425,6 @@ form {
 	margin: 0.3rem auto;
 	padding-left: 0.2rem;
 	padding-right: 0.2rem;
-}
-.result input {
-	margin: 0.1rem 0;
-	width: 7.5rem;
-	font-size: 1rem;
-	background-color: #333333;
-  	color: #ffffff;
-  	border: 1px solid #000000;
-  	cursor: pointer;
-  	padding: 0.4rem 0.4rem;
-  	text-align: center;
-  	text-decoration: none;
-  	font-family: Arial, Helvetica, sans-serif;
-  	border-radius: 2px;
-}
-.result input:focus {
-	box-shadow: 0 0 5px #51cbee;
-    outline: 2px solid #51cbee;
-}
-.result input:hover {
-	background: linear-gradient(to bottom, #4c4c4c 5%, #191919 100%);
-  	background-color: #8f8f8f;
 }
 .hidden-sec {
 	display: none;
@@ -639,4 +624,9 @@ td {
   	.cd-popup-container {
     	margin: 8rem auto;
   	}
+}
+@media only screen and (max-width: 480px), screen and (max-device-width: 480px) {
+  .TTT {
+  	display: block;
+  }
 }
