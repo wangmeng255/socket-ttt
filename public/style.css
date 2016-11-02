@@ -322,6 +322,7 @@ form {
 #players {
 	width: 15rem;
 	height: 25rem;
+	overflow: auto;
 	background-color: #e1e1e1;
 	border: 1px solid #c3c3c3;
 	box-shadow: -3px 4px 17px -2px #000000;
@@ -627,6 +628,10 @@ td {
 }
 @media only screen and (max-width: 480px), screen and (max-device-width: 480px) {
   .TTT {
-  	display: block;
+  	flex-direction: column-reverse;
+  }
+  #players {
+  	width: 22.5rem;
+  	margin: 0.2rem auto 0 auto;
   }
 }
