@@ -106,10 +106,12 @@ io.on('connection', function(socket){
             for(var i = 0; i < usersArray.length; i++) {
                 if(usersArray[i].socketId === data.sender.socketId) {
                     usersArray[i].state = 'busy';
+                    usersArray[i].playWith = data.receiver.socketId;
                     data.sender.state = 'busy';
                 }
                 if(usersArray[i].socketId === data.receiver.socketId) {
                     usersArray[i].state = 'busy';
+                    usersArray[i].playWith = data.sender.socketId;
                     data.receiver.state = 'busy';
                 }
             }
@@ -133,6 +135,7 @@ io.on('connection', function(socket){
         for(var i = 0; i < usersArray.length; i++) {
             if(usersArray[i].socketId === data.socketId) {
                 usersArray[i].state = 'available';
+                usersArray[i].playWith = undefined;
                 break;
             }
         }
@@ -144,6 +147,7 @@ io.on('connection', function(socket){
         for(var i = 0; i < usersArray.length; i++) {
             if(usersArray[i].socketId === data.socketId) {
                 usersArray[i].state = 'available';
+                usersArray[i].playWith = undefined;
                 break;
             }
         }
@@ -155,6 +159,7 @@ io.on('connection', function(socket){
         for(var i = 0; i < usersArray.length; i++) {
             if(usersArray[i].socketId === data.socketId) {
                 usersArray[i].state = 'available';
+                usersArray[i].playWith = undefined;
                 break;
             }
         }
@@ -167,6 +172,15 @@ io.on('connection', function(socket){
             --numUsers;
             for(var i = 0; i < usersArray.length; i++) {
                 if(usersArray[i].socketId === socket.id) {
+                    if(usersArray[i].playWith) {
+                        io.to(usersArray[i].playWith).emit('player left');
+                        for(var j = 0; j < usersArray.length; j++) {
+                            if(usersArray[j].socketId === usersArray[i].playWith)
+                                usersArray[j].state = 'available';
+                                usersArray[j].playWith = undefined;
+                                break;
+                        }
+                    }
                     usersArray.splice(i, 1);
                     break;
                 }
@@ -182,6 +196,15 @@ io.on('connection', function(socket){
             --numUsers;
             for(var i = 0; i < usersArray.length; i++) {
                 if(usersArray[i].socketId === socket.id) {
+                    if(usersArray[i].playWith) {
+                        io.to(usersArray[i].playWith).emit('player left');
+                        for(var j = 0; j < usersArray.length; j++) {
+                            if(usersArray[j].socketId === usersArray[i].playWith)
+                                usersArray[j].state = 'available';
+                                usersArray[j].playWith = undefined;
+                                break;
+                        }
+                    }
                     usersArray.splice(i, 1);
                     break;
                 }

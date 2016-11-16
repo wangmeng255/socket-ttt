@@ -1,6 +1,6 @@
 "use strict"
 
-var Game = function(socket, players, steps) {
+function Game(socket, players, steps) {
 	var board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 	var winArr = [
 				[1, 2, 3, 6, 4, 8],
@@ -16,6 +16,12 @@ var Game = function(socket, players, steps) {
 	
 	var TTT = $('.TTT');
 	var result = TTT.find('.result h2');
+	var playBoard = TTT.find('.board');
+	
+	if(playBoard.hasClass('finish')) {
+		playBoard.html($('.hidden').find(".board").children().clone());
+		playBoard.removeClass('finish');
+	}
 	
 	var sender;
 	if(steps & 1) {
@@ -147,6 +153,7 @@ var Game = function(socket, players, steps) {
 				$($block.get(blockIndex)).find('svg').css('stroke', 'red');
 				$($block.get(winArr[blockIndex][i])).find('svg').css('stroke', 'red');
 				$($block.get(winArr[blockIndex][i + 1])).find('svg').css('stroke', 'red');
+				restart();
 				return true;
 			}
 		}
@@ -154,22 +161,15 @@ var Game = function(socket, players, steps) {
 			if(sender) socket.emit('draw game', {username: players.sender.username, socketId: socket.id});
 			else socket.emit('draw game', {username: players.receiver.username, socketId: socket.id});
 			boardSelector.closest('.game').find('h2').text('draw');
+			restart();
 			return true;
 		}
 		return false;
 	}
 	
-	function cleanBoard(playBoard) {
-		board.forEach(function(val, i, array) {
-			array[i] = 0;
-		});
-		playBoard.closest('.game').find('h2').html('&nbsp;');
-		playBoard.html($('.hidden').find(".board").children().clone());
-		playBoard.removeClass('finish');
-	}
-	
-	function restart(playBoard) {
-		cleanBoard(playBoard);
+	function restart() {
+		steps = 0;
+		board = [0, 0, 0, 0, 0, 0, 0, 0];
 		
 		TTT.off('change', '.block input', oneStep);
 	
@@ -177,13 +177,22 @@ var Game = function(socket, players, steps) {
 		socket.off('receiver turn', playerTurn);
 	}
 	
-	return restart;
+	function cleanBoard() {
+		restart();
+		playBoard.html($('.hidden').find(".board").children().clone());
+		playBoard.removeClass('finish');
+		result.html('&nbsp;');
+	}
+	
+	return cleanBoard;
 }
 
 var RunTicTacToe = function(socket, user) {
 	var usersArray = [];
     var client = user;
     client.socketId = socket.id;
+    
+    var cleanBoard;
     
     var switchInput = $('.switch input');
     var switchLogOut = $('.switch');
@@ -195,10 +204,12 @@ var RunTicTacToe = function(socket, user) {
     var gameTitle = $('.game h1');
     var TTT = $('.TTT');
     var username = $('.username');
-    var playBoard = $('.game .board');
+    var playBoard = TTT.find('.board');
     
     switchInput.prop('checked', true);
     switchLogOut.css('pointer-events', 'auto');
+    switchLogOut.css('opacity', 1);
+    
     signUp.hide();
     logIn.hide();
     
@@ -213,6 +224,14 @@ var RunTicTacToe = function(socket, user) {
 	socket.on('user left', getUsersArray);
 	socket.on('request to play', requestToPlay);
 	socket.on('response from receiver', responseFromReceiver);
+	socket.on('player left', cleanState);
+	
+	function cleanState() {
+		gameTitle.html('choose one <div class="green state"></div> player online');
+		if(playBoard.hasClass('finish')) playBoard.removeClass('finish');
+		playBoard.html($('.hidden').find(".board").children().clone());
+		cleanBoard();
+	}
 	
 	function getUsersArray(data) {
 		var ul = playersUl;
@@ -245,9 +264,7 @@ var RunTicTacToe = function(socket, user) {
 			        	$(playersLi.get(i)).find('.state').toggleClass('green').addClass('red');
 					}
 		        }
-				var restart = Game(socket, data, 1);
-				if(playBoard.hasClass('finish')) restart(playBoard);
-				
+				cleanBoard = Game(socket, data, 1);
 			} else {
 				socket.emit('response from receiver', {sender: data.sender, receiver: data.receiver, accept: false});
 			}
@@ -265,8 +282,8 @@ var RunTicTacToe = function(socket, user) {
 		$(playersLi.get(i)).css('pointer-events', 'auto');
 		
 		if(data.accept) {
-	        var restart = Game(socket, data, 0);
-	        if(playBoard.hasClass('finish')) restart(playBoard);
+	        cleanBoard = Game(socket, data, 0);
+	        
 		    usersArray[i].state = 'busy';
 		    gameTitle.html('playing with <span>' + data.receiver.username.toUpperCase() + '</span>');
 		    $(playersLi.get(i)).find('.state').toggleClass('green').addClass('red');
@@ -288,10 +305,16 @@ var RunTicTacToe = function(socket, user) {
 		var logOut = event.target;
 		if(!logOut.checked) {
 			socket.emit('log out');
+			
+			if(playBoard.hasClass('finish')) playBoard.removeClass('finish');
+			playBoard.html($('.hidden').find(".board").children().clone());
+			cleanBoard();
+			
 			TTT.hide();
 			logIn.show();
 			username.remove();
 			switchLogOut.css('pointer-events', 'none');
+			switchLogOut.css('opacity', 0.3);
 			switchInput.off('click', switchInputonClick);
 			
 			players.off('click', playersonClick);
@@ -309,23 +332,25 @@ var RunTicTacToe = function(socket, user) {
 		closestLi.css('pointer-events', 'none');
 		var player = usersArray[playersLi.index(closestLi)];
 		
-		if(player.state === 'available') {
-			closestLi.append('<img src="waiting.gif" alt="waiting">');
-			socket.emit('send game request', {
-				sender: {username: client.username}, 
-				receiver: {username: player.username, socketId: player.socketId}
-			});
-		}
-		else {
-			var alertPopup = $('.alert');
-			alertPopup.find('p').html('<strong>' + player.username + '</strong> is playing!');
-			alertPopup.addClass('is-visible');
-			
-			alertPopup.on('click', function(event){
-				if($(event.target).is('.cd-popup-close')) {
-					$(this).removeClass('is-visible');
-				}
-			});
+		if(player) {
+			if(player.state === 'available') {
+				closestLi.append('<img src="waiting.gif" alt="waiting">');
+				socket.emit('send game request', {
+					sender: {username: client.username}, 
+					receiver: {username: player.username, socketId: player.socketId}
+				});
+			}
+			else {
+				var alertPopup = $('.alert');
+				alertPopup.find('p').html('<strong>' + player.username + '</strong> is playing!');
+				alertPopup.addClass('is-visible');
+				
+				alertPopup.on('click', function(event){
+					if($(event.target).is('.cd-popup-close')) {
+						$(this).removeClass('is-visible');
+					}
+				});
+			}
 		}
 	}
 	
@@ -341,7 +366,7 @@ var RunTicTacToe = function(socket, user) {
 			if(user.state === 'available') {
 			    stateCircle = '<div class="green state"></div>';
 			}
-			if(user.state === 'playing') {
+			if(user.state === 'busy') {
 				stateCircle = '<div class="red state"></div>';
 			}
 			ul.append('<li>' + stateCircle + '<a>' + user.username + '</a></li>');
