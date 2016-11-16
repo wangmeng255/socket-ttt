@@ -209,6 +209,17 @@ after {
     float: initial;
 }
 
+#log-in .popup .popuptext::after, #sign-up .popup .popuptext::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #555 transparent transparent;
+}
+
 /* Toggle this class - hide and show the popup */
 #log-in .popup .show, #sign-up .popup .show {
     visibility: visible;

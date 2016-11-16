@@ -308,7 +308,7 @@ var RunTicTacToe = function(socket, user) {
 			
 			if(playBoard.hasClass('finish')) playBoard.removeClass('finish');
 			playBoard.html($('.hidden').find(".board").children().clone());
-			cleanBoard();
+			if(cleanBoard) cleanBoard();
 			
 			TTT.hide();
 			logIn.show();
