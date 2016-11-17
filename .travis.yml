@@ -1,0 +1,18 @@
+language: node_js
+node_js: node
+services:
+- mongodb
+addons:
+  apt:
+    sources:
+    - mongodb-3.2-precise
+    packages:
+    - mongodb-org-server
+deploy:
+  provider: heroku
+  api_key:
+    secure: P2tiXB0BM3+Nf0+w36Rlng5KFYCWUJjhXTXSRqIHNILWkEzuWlHttYcOoisAQH3TnJV1tfaVnxTpkvbeqNhS+nDSzRkb9Svsi9PBxr7KuSmzcWWzylve2wALbmXpcbsk9z647hyX2D1XjIX4EPHzAnWURh2sbOTdDb8vXHYEyd9Cb5CPEmiTAewUdC8R2sREBZvp2uEOqjEZYb0djf3Irj0Cm8cLr3kslfadG5DSaaCWXFb+gWhbHgc5zkmjKTDnc3h8nQWo/hSnE15wzA8zWbJJrlZijOvxmQx8Pj0fYVT6YX10PwE4fY13fl4DNHvlgArAJV6onfIQYHow0BfOv0fmL727RyB47JJzsI74bs5zWAWJyA4/GcGu2Q/+ApCTXcRnWscBLn3DzIObGM6nVFeV+FeuZzIqii3v//SG5FS8jA859HqUslMr+iGgJutwO/RKAX+3+bm62TNAZIWMbs+LQFHV/9Qg0RV3dI6abDakTQx8yDYq4M/u09BoDst8EYmNXS2ca7JmT7oaBPiwK9f9hCfeE40XZ1NzQV0/AY1hWsaR/nra9E8Sysy0N3MF/jeehVm1SQTNZ6Sh7UvNLnMJd7SvHrLR8i8I+jpzaDTtMJuLyXgn2N32hTZierOE0ErDL31BuGkmzCvSvo8/F44mFyLrJ8wVARWLUpkK+DY=
+  app: socket-tic-tac-toe
+  on:
+    repo: wangmeng255/socket-ttt
+    branch: dev
