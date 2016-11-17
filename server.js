@@ -175,17 +175,19 @@ io.on('connection', function(socket){
                     if(usersArray[i].playWith) {
                         io.to(usersArray[i].playWith).emit('player left');
                         for(var j = 0; j < usersArray.length; j++) {
-                            if(usersArray[j].socketId === usersArray[i].playWith)
+                            console.log('socketId compare playWith', usersArray[j].socketId, usersArray[i].playWith);
+                            if(usersArray[j].socketId === usersArray[i].playWith) {
                                 usersArray[j].state = 'available';
                                 usersArray[j].playWith = undefined;
                                 break;
+                            }
                         }
                     }
                     usersArray.splice(i, 1);
                     break;
                 }
             }
-            
+            console.log(usersArray);
             socket.broadcast.emit('user left', usersArray);
         }
     });
@@ -199,10 +201,11 @@ io.on('connection', function(socket){
                     if(usersArray[i].playWith) {
                         io.to(usersArray[i].playWith).emit('player left');
                         for(var j = 0; j < usersArray.length; j++) {
-                            if(usersArray[j].socketId === usersArray[i].playWith)
+                            if(usersArray[j].socketId === usersArray[i].playWith) {
                                 usersArray[j].state = 'available';
                                 usersArray[j].playWith = undefined;
                                 break;
+                            }
                         }
                     }
                     usersArray.splice(i, 1);

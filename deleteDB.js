@@ -9,7 +9,7 @@ var server = http.Server(app);
 var config = require('./config');
 mongoose.Promise = global.Promise;
 
-User.remove(function(err,removed) {
+User.remove(function(err, removed) {
 
    // where removed is the count of removed documents
    if(err) console.log(err)

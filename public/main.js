@@ -157,7 +157,7 @@ function Game(socket, players, steps) {
 				return true;
 			}
 		}
-		if(8 <= steps) {
+		if(steps === 8 ) {
 			if(sender) socket.emit('draw game', {username: players.sender.username, socketId: socket.id});
 			else socket.emit('draw game', {username: players.receiver.username, socketId: socket.id});
 			boardSelector.closest('.game').find('h2').text('draw');
