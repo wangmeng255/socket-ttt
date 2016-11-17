@@ -2,11 +2,9 @@ global.DATABASE_URL = 'mongodb://admin:admin@ds013946.mlab.com:13946/tic-tac-toe
 
 var chai = require('chai');
 var chaiHttp = require('chai-http');
+var should = chai.should();
 
 var server = require('../server.js');
-
-var should = chai.should();
-var app = server.app;
 
 var User = require('../user-model');
 
