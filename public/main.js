@@ -384,7 +384,7 @@ function userLogin(username, password, type) {
 	socket.on('authenticated', () => {
 		console.log('User authentictaed!');
 		$('.username').remove();
-		$('header li:first-child svg').after('<div class="username">Hi, ' + username + '</div>');
+		$('header li:first-child svg').after('<h2 class="username">Hi, ' + username + '</h2>');
 		$('.TTT').show();
 		$('.TTT').css('display', 'flex');
 		RunTicTacToe(socket, user);
