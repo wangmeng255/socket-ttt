@@ -16,6 +16,14 @@ Users can sign up, log in mongoDB, choose an online player to play. Server trans
 
 The initial desktop andd mobile wireframes can be seen below:
 
-![tic tac toe login](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-login.png "log in Tic Tac Toe on laptop")
-
 ##How to Use
+
+Login 
+
+![tic tac toe login](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-login.png "log in Tic Tac Toe on laptop and mobile")
+
+Send request to play
+
+![tic tac toe request](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-request.png "request Tic Tac Toe on laptop and mobile")
+
+User play
