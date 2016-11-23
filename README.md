@@ -40,9 +40,7 @@ You can access a working prototype of the app here: [socket tic tac toe](https:/
 
 ##Functionality
 
-The app's functionality includes:
-
-Users can play a 3*3 blocks tic tac toe online.
+The app's main functionality: users can play a 3*3 blocks tic tac toe online.
 
 * Server-side:
 
@@ -72,3 +70,5 @@ The client-side in this app is built in jQuery and socket.io. The server-side in
 This is v1.0 of the app, but future enhancements are expected to include:
 
 * Adding playing vs computer with artificial intelligence in server-side.
+* Adding win, lose, and draw records to user data in mongoDB.
+* Adding Top 10 players list in client-side.
