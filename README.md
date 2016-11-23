@@ -26,4 +26,10 @@ Send request to play
 
 ![tic tac toe request](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-request.png "request Tic Tac Toe on laptop and mobile")
 
-User play
+User playing
+
+![tic tac toe playing](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-playing.png "play Tic Tac Toe on laptop and mobile")
+
+User win
+
+![tic tac toe win](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-win.png "win Tic Tac Toe on laptop and mobile")
