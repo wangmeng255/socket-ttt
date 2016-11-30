@@ -62,7 +62,6 @@ The client-side in this app is built with jQuery and socket.io. The server-side 
 ##Development Roadmap
 
 This is v1.0 of the app, but future enhancements are expected to include:
-
 * Adding playing vs computer with artificial intelligence in server-side.
 * Adding win, lose, and draw records to user data in MongoDB.
 * Adding Top 10 players list in client-side.
