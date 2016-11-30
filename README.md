@@ -39,27 +39,25 @@ You can access a working prototype of the app here: (https://socket-tic-tac-toe.
 The app's main functionality: users can play a 3*3 blocks tic tac toe online.
 
 * Server-side:
-
-1. Storing user data in MongoDB.
-2. Checking username and password when user logs in or signs up.
-3. Keeping online users list.
-4. Listening user's state and send users list to client-side.
-5. Listening user's play request.
-6. Listenging user's play input when user is playing.
-7. Listening user's log out or disconnection.
+    1. Storing user data in MongoDB.
+    2. Checking username and password when user logs in or signs up.
+    3. Keeping online users list.
+    4. Listening user's state and send users list to client-side.
+    5. Listening user's play request.
+    6. Listenging user's play input when user is playing.
+    7. Listening user's log out or disconnection.
 
 * Client-side: 
-
-1. Choosing an online user to play.
-2. Sending or receiving play request to a user and updating user's state.
-3. Listening opponent input and showing it.
-4. Showing game result.
-5. Sending disconnection and log out to server-side.
+    1. Choosing an online user to play.
+    2. Sending or receiving play request to a user and updating user's state.
+    3. Listening opponent input and showing it.
+    4. Showing game result.
+    5. Sending disconnection and log out to server-side.
 
 
 ##Technical
 
-The client-side in this app is built in jQuery and socket.io. The server-side in this app mongoose, passport, and socketio-auth. The socket.io makes connections between client-side and server-side. Username and password are held in MongoDB. User list is held in memory during the user's session. It has been built to be fully responsive across mobile, tablet and desktop screen resolutions.
+The client-side in this app is built with jQuery and socket.io. The server-side in this app is built with mongoose, passport, and socketio-auth. The socket.io makes connections between client-side and server-side. Username and password are held in MongoDB. User list is held in memory during the user's session. It has been built to be fully responsive across mobile, tablet and desktop screen resolutions.
 
 ##Development Roadmap
 
