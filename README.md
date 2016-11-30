@@ -2,7 +2,7 @@
 
 Thinkful (https://www.thinkful.com) Portfolio Exercise - a game app built with socket-io, jQuery, and mongoose.
 
-![tic tac toe](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-ini.png "Playing Tic Tac Toe on laptop")
+![Screenshot](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-ini.png "Screenshot")
 
 ##Background
 
@@ -12,27 +12,23 @@ I am a game fun. I built this simple game to practice socket.io, mongoose, and p
 
 Users can sign up, log in mongoDB, choose an online player to play. Server transfers informations between players, and interact with mongoDB to do users log in or sign up. If you wants to find an example to show how to use passport, socketio-auth, and mongoose model, this project helps you.
 
-##Initial UX
-
-The initial desktop andd mobile wireframes can be seen below:
-
 ##How to Use
 
 1. User needs to Login. If user doesn't have an account, user can sign up.
 
-![tic tac toe login](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-login.png "log in Tic Tac Toe on laptop and mobile")
+![tic tac toe login](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-login.png "log in Tic Tac Toe")
 
 2. User can click one user with green pot on the right side panel "Players online", app will send a request to the clicked user`
 
-![tic tac toe request](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-request.png "request Tic Tac Toe on laptop and mobile")
+![tic tac toe request](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-request.png "request Tic Tac Toe")
 
 3. If the user accepted, two users start to play.
 
-![tic tac toe playing](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-playing.png "play Tic Tac Toe on laptop and mobile")
+![tic tac toe playing](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-playing.png "play Tic Tac Toe")
 
 4. If one user won or the game was drawed, the game ends. And user can choose a user to play the game again. 
 
-![tic tac toe win](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-win.png "win Tic Tac Toe on laptop and mobile")
+![tic tac toe win](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-win.png "win Tic Tac Toe")
 
 ##Working Prototype
 

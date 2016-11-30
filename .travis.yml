@@ -15,4 +15,4 @@ deploy:
   app: socket-tic-tac-toe
   on:
     repo: wangmeng255/socket-ttt
-    branch: dev
+    branch: master
