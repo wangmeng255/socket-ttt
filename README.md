@@ -10,7 +10,7 @@ I am a game fun. I built this simple game to practice socket.io, mongoose, and p
 
 ##Use Case
 
-Users can sign up, log in mongoDB, choose an online player to play. Server transfers informations between players, and interact with mongoDB to do users log in or sign up. If you wants to find an example to show how to use passport, socketio-auth, and mongoose model, this project helps you.
+Users can sign up, log in MongoDB, choose an online player to play. Server transfers informations between players, and interact with MongoDB to do users log in or sign up. If you wants to find an example to show how to use passport, socketio-auth, and mongoose model, this project helps you.
 
 ##How to Use
 
@@ -40,7 +40,7 @@ The app's main functionality: users can play a 3*3 blocks tic tac toe online.
 
 * Server-side:
 
-1. Storing user data in mongoDB.
+1. Storing user data in MongoDB.
 2. Checking username and password when user logs in or signs up.
 3. Keeping online users list.
 4. Listening user's state and send users list to client-side.
@@ -59,12 +59,12 @@ The app's main functionality: users can play a 3*3 blocks tic tac toe online.
 
 ##Technical
 
-The client-side in this app is built in jQuery and socket.io. The server-side in this app mongoose, passport, and socketio-auth. The socket.io makes connections between client-side and server-side. Username and password are held in mongoDB. User list is held in memory during the user's session. It has been built to be fully responsive across mobile, tablet and desktop screen resolutions.
+The client-side in this app is built in jQuery and socket.io. The server-side in this app mongoose, passport, and socketio-auth. The socket.io makes connections between client-side and server-side. Username and password are held in MongoDB. User list is held in memory during the user's session. It has been built to be fully responsive across mobile, tablet and desktop screen resolutions.
 
 ##Development Roadmap
 
 This is v1.0 of the app, but future enhancements are expected to include:
 
 * Adding playing vs computer with artificial intelligence in server-side.
-* Adding win, lose, and draw records to user data in mongoDB.
+* Adding win, lose, and draw records to user data in MongoDB.
 * Adding Top 10 players list in client-side.
