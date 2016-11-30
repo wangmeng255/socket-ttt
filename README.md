@@ -32,7 +32,7 @@ Users can sign up, log in mongoDB, choose an online player to play. Server trans
 
 ##Working Prototype
 
-You can access a working prototype of the app here: [socket tic tac toe](https://socket-tic-tac-toe.herokuapp.com/)
+You can access a working prototype of the app here: (https://socket-tic-tac-toe.herokuapp.com/)
 
 ##Functionality
 
