@@ -4,15 +4,15 @@ Thinkful (https://www.thinkful.com) Portfolio Exercise - a game app built with s
 
 ![Screenshot](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-ini.png "Screenshot")
 
-##Background
+## Background
 
 I am a game fun. I built this simple game to practice socket.io, mongoose, and passport. I think the project is also a prototype of Instant Messager app. And I want to add  an artificial intelligence algorithm in the server in the future.
 
-##Use Case
+## Use Case
 
 Users can sign up, log in MongoDB, choose an online player to play. Server transfers informations between players, and interact with MongoDB to do users log in or sign up. If you wants to find an example to show how to use passport, socketio-auth, and mongoose model, this project helps you.
 
-##How to Use
+## How to Use
 
 1. User needs to Login. If user doesn't have an account, user can sign up.
 
@@ -30,11 +30,11 @@ Users can sign up, log in MongoDB, choose an online player to play. Server trans
 
 ![tic tac toe win](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-win.png "win Tic Tac Toe")
 
-##Working Prototype
+## Working Prototype
 
 You can access a working prototype of the app here: (https://socket-tic-tac-toe.herokuapp.com/)
 
-##Functionality
+## Functionality
 
 The app's main functionality: users can play a 3*3 blocks tic tac toe online.
 
@@ -55,11 +55,11 @@ The app's main functionality: users can play a 3*3 blocks tic tac toe online.
     5. Sending disconnection and log out to server-side.
 
 
-##Technical
+## Technical
 
 The client-side in this app is built with jQuery and socket.io. The server-side in this app is built with mongoose, passport, and socketio-auth. The socket.io makes connections between client-side and server-side. Username and password are held in MongoDB. User list is held in memory during the user's session. It has been built to be fully responsive across mobile, tablet and desktop screen resolutions.
 
-##Development Roadmap
+## Development Roadmap
 
 This is v1.0 of the app, but future enhancements are expected to include:
 * Adding playing vs computer with artificial intelligence in server-side.
