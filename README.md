@@ -1,6 +1,6 @@
 # Socket Tic Tac Toe
 
-Thinkful (https://www.thinkful.com) Portfolio Exercise - a game app built with socket-io, jQuery, and mongoose.
+Portfolio Exercise - a game app built with socket-io, jQuery, and mongoose.
 
 ![Screenshot](https://github.com/wangmeng255/socket-ttt/blob/dev/images/tic-tac-toe-ini.png "Screenshot")
 
